@@ -7,7 +7,7 @@ INSERT INTO department (id, name) VALUES
 -- Seeds for 'role' table
 INSERT INTO role (id, title, salary, department_id) VALUES
 (1, 'Sales', 80000, 1),
-(2, 'Asisstant Manager to the Regional Manager', 70000, 2),
+(2, 'Asisstant to the Regional Manager', 70000, 2),
 (3, 'Accounting', 60000, 3);
 
 -- Seeds for 'employee' table
