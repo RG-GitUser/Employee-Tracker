@@ -1,11 +1,11 @@
--- Department Table -- 
+-- Department Table 
 
 CREATE TABLE department (
     id INT PRIMARY KEY,
     name VARCHAR(30)
 );
 
--- Role Table --
+-- Role Table 
 
 CREATE TABLE role (
     id INT PRIMARY KEY,
@@ -17,7 +17,7 @@ CREATE TABLE role (
 
 
 
--- Employee Table -- 
+-- Employee Table 
 
 CREATE TABLE employee (
     id INT PRIMARY KEY,
