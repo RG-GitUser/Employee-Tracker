@@ -75,7 +75,7 @@ switch (action) {
             console.log('No departments to display.');
         } else {
             console.log('Department list:');
-            departments.forEach((deopartment) => {
+            departments.forEach((departments) => {
                 console.log('ID: ${department.id}, Name: ${department.name}');
             });
         }
@@ -88,7 +88,21 @@ switch (action) {
     console.log('All Roles View')
     try {
         const query = 'SELECT * FROM Roles';
-        const roles = await DEC8_BIN
+        const roles = await db.query(query);
+
+        if (roles.length === 0 ) {
+            console.log('No roles to display');
+        } else {
+            console.log('Role list:');
+            roles.forEach((roles) => {
+                console.log('ID: ${roles.id}, Name: ${roles.name}');
+            });
+        }
+    } catch (error) {
+        console.error('Error fetching roles', error);
+
     }
-  }
+
+ }
+  
   
