@@ -3,10 +3,10 @@ const mysql = require('mysql');
 // Connection pool - reusing database connection
 const pool = mysql.createPool({
   connectionLimit: 10, 
-  host: 'your_database_host',
-  user: 'your_database_user',
-  password: 'your_database_password',
-  database: 'your_database_name',
+  host: '',
+  user: '',
+  password: '',
+  database: 'db.json',
 });
 
 // Function for sql queries
