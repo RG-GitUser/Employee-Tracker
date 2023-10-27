@@ -1,57 +1,54 @@
-const mysql = require('mysql'); 
-
+const mysql = require('mysql');
+const inquirer = require('inquirer');
 
 const db = mysql.createConnection({
   host: 'localhost',
   user: 'root',
-  password: 'database.password',
-  database: 'employeetracker',
+  password: 'UNBbootcamp!23', 
+  database: 'employeetracker', 
 });
 
-// connect to database
-
+// Connect to the database
 db.connect((err) => {
-    if (err) {
-        console.error('Error connecting to database: ' + err);
-        return;
-    }
-    console.log('Connect to database');
+  if (err) {
+    console.error('Error connecting to the database: ' + err);
+    return;
+  }
+  console.log('Connected to the database');
+  mainMenu();
 });
 
-// function to retrieve departments 
-
+// Function to retrieve departments
 function getAllDepartments(callback) {
-    const query = 'SELECT id, name FROM departments';
-    db.query(query, (err, results) => {
-      if (err) {
-        console.error('Error fetching departments: ' + err);
-       return callback(err, null);
-        
-      }
-      callback(null, results);
-    });
-  }
+  const query = 'SELECT id, name FROM departments';
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error('Error fetching departments: ' + err);
+      return callback(err, null);
+    }
+    callback(null, results);
+  });
+}
 
-  // Function to add a new department
-function addDepartment(departmentName, callback) {
-    const query = 'INSERT INTO departments (name) VALUES (?)';
-    db.query(query, [departmentName], (err, results) => {
-      if (err) {
-        console.error('Error adding a department: ' + err);
-        callback(err, null);
-        return;
-      }
-      callback(null, results);
-    });
-  }
-  
-  // Close the database connection when exiting 
-  function closeConnection() {
-    db.end();
-  }
-  
-  module.exports = {
-    getAllDepartments,
-    addDepartment,
-    closeConnection,
-  };
+// Function to display all departments
+
+async function viewAllDepartments() {
+  console.log('All Departments View');
+  getAllDepartments((err, departments) => {
+    if (err) {
+      console.error('Error: ' + err);
+      return;
+    }
+
+    if (departments.length === 0) {
+      console.log('No departments to display.');
+    } else {
+      console.log('Department list:');
+      departments.forEach((department) => {
+        console.log(`ID: ${department.id}, Name: ${department.name}`);
+      });
+    }
+    mainMenu();
+  });
+}
+
