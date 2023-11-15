@@ -1,11 +1,12 @@
 const inquirer = require('inquirer');
 const consoleTable = require('console.table');
 const mysql = require('mysql2/promise');
+
 // Created connection pool
 const pool = mysql.createPool({
-  host: '5500',
-  user: 'local',
-  password: 'UNBbootcamp!23',
+  host: '5500', 
+  user: 'localhost', 
+  password: 'UNBbootcamp!23', 
   database: 'employeetracker',
   waitForConnections: true,
   connectionLimit: 10,
@@ -50,73 +51,91 @@ async function viewAllRoles() {
   }
 }
 
-// Inside your switch statement
-switch (action) {
-  case 'View all departments':
-    await viewAllDepartments();
-    break;
+// VIEW EMPLOYEES
+async function viewAllEmployees() {
+  try {
+    // Get a connection from the pool
+    const connection = await pool.getConnection();
 
-  case 'View all roles':
-    await viewAllRoles();
-    break;
+    // Retrieve all employees
+    const [rows, fields] = await connection.query('SELECT * FROM employees');
 
+    // Display the result using console.table
+    console.table(rows);
+
+    // Release the connection back to the pool
+    connection.release();
+  } catch (error) {
+    console.error('Error fetching employees:', error.message);
+  }
 }
 
+// Function to display options and handle user input
+async function startApplication() {
+  while (true) {
+    const { action } = await inquirer.prompt({
+      name: 'action',
+      type: 'list',
+      message: 'What would you like to do?',
+      choices: [
+        'View all departments',
+        'View all roles',
+        'View all employees',
+        'Add a department',
+        'Add a role',
+        'Add an employee',
+        'Update an employee role',
+        'Exit',
+      ],
+    });
 
-
-        //VIEW EMPLOYEES
-      case 'View all employees':
-        // Call a function to fetch and display all employees
-        // For example: viewAllEmployees();
-        console.log('Viewing all employees...');
+    // Switch statement to handle user action
+    switch (action) {
+      case 'View all departments':
+        await viewAllDepartments();
         break;
 
 
+      case 'View all roles':
+        await viewAllRoles();
+        break;
 
-        //ADD DEPARTMENT
+      case 'View all employees':
+        await viewAllEmployees();
+        break;
+
+
+        // Functions for adding department, role and employee 
+
       case 'Add a department':
-        // Call a function to add a new department
-        // For example: addDepartment();
+        // Implement the function to add a department
         console.log('Adding a department...');
         break;
 
-
-
-        //ADD ROLE
       case 'Add a role':
-        // Call a function to add a new role
-        // For example: addRole();
+        // Implement the function to add a role
         console.log('Adding a role...');
         break;
 
-
-
-        //ADD EMPLOYEE
       case 'Add an employee':
-        // Call a function to add a new employee
-        // For example: addEmployee();
+        // Implement the function to add an employee
         console.log('Adding an employee...');
         break;
 
 
 
-        //UPDATE EMPLOYEE
+        // function to update an epmployee role
+
       case 'Update an employee role':
-        // Call a function to update an employee's role
-        // For example: updateEmployeeRole();
+        // Implement the function to update an employee's role
         console.log('Updating an employee role...');
         break;
 
-
-
-        //EXIT 
       case 'Exit':
         // Exit the application
         console.log('Exiting the application.');
         process.exit(0);
 
-
-        //ERROR MSG
       default:
         console.log('Invalid choice. Please try again.');
         break;
@@ -124,13 +143,5 @@ switch (action) {
   }
 }
 
-
-//START
+// Start the application
 startApplication();
-
-  
-  module.exports = {
-    getAllDepartments,
-    addDepartment,
-    closeConnection,
-  };
