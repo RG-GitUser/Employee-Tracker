@@ -1,4 +1,4 @@
-USE employeetrackerdb; 
+USE employeetracker; 
 
 -- Seeds for 'department' table
 INSERT INTO department (id, name) VALUES
