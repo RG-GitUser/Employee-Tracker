@@ -4,9 +4,9 @@ const mysql = require('mysql2/promise');
 
 // Created connection pool
 const pool = mysql.createPool({
-  host: '5500', 
-  user: 'localhost', 
-  password: 'UNBbootcamp!23', 
+  host: '5500', // <-- Update with your actual host
+  user: 'local', // <-- Update with your actual user
+  password: 'UNBbootcamp!23', // <-- Update with your actual password
   database: 'employeetracker',
   waitForConnections: true,
   connectionLimit: 10,
@@ -105,27 +105,133 @@ async function startApplication() {
         break;
 
 
+
         // Functions for adding department, role and employee 
 
+        // ADD DEPARTMENT
       case 'Add a department':
-        // Implement the function to add a department
         console.log('Adding a department...');
         break;
+      
+        //function
+async function addDepartment() {
+  try {
+    const { departmentName } = await inquirer.prompt({
+      name: 'departmentName',
+      type: 'input',
+      message: 'Enter the name of the new department:',
+    });
 
+    // Get a connection from the pool
+    const connection = await pool.getConnection();
+
+    // Insert the new department into the database
+    await connection.query('INSERT INTO departments (department_name) VALUES (?)', [departmentName]);
+
+    // Release the connection back to the pool
+    connection.release();
+
+    console.log(`Department "${departmentName}" added successfully.`);
+  } catch (error) {
+    console.error('Error adding department:', error.message);
+  }
+}
+
+// ADD ROLE
       case 'Add a role':
         // Implement the function to add a role
         console.log('Adding a role...');
         break;
+        
+        //function
+async function addRole() {
+  try {
+    const { roleName, roleSalary, departmentId } = await inquirer.prompt([
+      {
+        name: 'roleName',
+        type: 'input',
+        message: 'Enter the name of the new role:',
+      },
+      {
+        name: 'roleSalary',
+        type: 'number',
+        message: 'Enter the salary for the new role:',
+      },
+      {
+        name: 'departmentId',
+        type: 'number',
+        message: 'Enter the department ID for the new role:',
+      },
+    ]);
 
-      case 'Add an employee':
-        // Implement the function to add an employee
-        console.log('Adding an employee...');
-        break;
+    // Get a connection from the pool
+    const connection = await pool.getConnection();
+
+    // Insert the new role into the database
+    await connection.query(
+      'INSERT INTO roles (role_title, salary, department_id) VALUES (?, ?, ?)',
+      [roleName, roleSalary, departmentId]
+    );
+
+    // Release the connection back to the pool
+    connection.release();
+
+    console.log(`Role "${roleName}" added successfully.`);
+  } catch (error) {
+    console.error('Error adding role:', error.message);
+  }
+}
+
+
+// ADD EMPLOYEE
+      // ADD EMPLOYEE
+async function addEmployee() {
+  try {
+    const { firstName, lastName, roleId, managerId } = await inquirer.prompt([
+      {
+        name: 'firstName',
+        type: 'input',
+        message: "Enter the employee's first name:",
+      },
+      {
+        name: 'lastName',
+        type: 'input',
+        message: "Enter the employee's last name:",
+      },
+      {
+        name: 'roleId',
+        type: 'number',
+        message: "Enter the employee's role ID:",
+      },
+      {
+        name: 'managerId',
+        type: 'number',
+        message: "Enter the employee's manager ID (if applicable):",
+      },
+    ]);
+
+    // Get a connection from the pool
+    const connection = await pool.getConnection();
+
+    // Insert the new employee into the database
+    await connection.query(
+      'INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)',
+      [firstName, lastName, roleId, managerId]
+    );
+
+    // Release the connection back to the pool
+    connection.release();
+
+    console.log(`Employee "${firstName} ${lastName}" added successfully.`);
+  } catch (error) {
+    console.error('Error adding employee:', error.message);
+  }
+}
 
 
 
-        // function to update an epmployee role
 
+        // functions to update employee role 
       case 'Update an employee role':
         // Implement the function to update an employee's role
         console.log('Updating an employee role...');
