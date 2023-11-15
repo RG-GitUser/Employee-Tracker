@@ -19,6 +19,7 @@ Users are able to keep track of their employees and manage their work roles.
 
 ### Screenshot: 
 
+![image](https://github.com/RG-GitUser/Employee-Tracker/assets/139709113/d53c4c85-26f9-4198-951e-ba056f21289c)
 
 
 ### Application
