@@ -3,9 +3,9 @@ const mysql = require('mysql');
 // Connection pool - reusing database connection
 const pool = mysql.createPool({
   connectionLimit: 10, 
-  host: '',
-  user: '',
-  password: '',
+  host: '5500',
+  user: 'localhost',
+  password: 'UNBbootcamp!23',
   database: 'db.json',
 });
 
