@@ -1,12 +1,21 @@
 const inquirer = require('inquirer');
 const consoleTable = require('console.table');
 const mysql = require('mysql2/promise');
-const { viewAllDepartments, viewAllRoles, ... } = require('./db');
+const {
+  viewAllDepartments,
+  viewAllRoles,
+  addDepartment,
+  addRole,
+  addEmployee,
+  updateEmployeeRole,
+} = require('./db');
 const inquirer = require('./prompts');
+
+
 // Created connection pool
 const pool = mysql.createPool({
-  host: '5500', 
-  user: 'local',
+  host: 'localhost', 
+  user: 'root',
   password: 'UNBbootcamp!23', 
   database: 'employeetracker',
   waitForConnections: true,
