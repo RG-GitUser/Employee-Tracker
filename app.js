@@ -1,5 +1,5 @@
 const express = require('express');
-// Import and require mysql2
+const inquirer = require('inquirer');
 const mysql = require('mysql2');
 
 const PORT = process.env.PORT || 3001;
@@ -13,7 +13,6 @@ app.use(express.json());
 const db = mysql.createConnection(
   {
     host: 'localhost',
-    // MySQL username,
     user: 'root',
     password: 'UNBbootcamp!23',
     database: 'employee_tracker'
@@ -21,7 +20,7 @@ const db = mysql.createConnection(
   console.log(`Connected to the employee_tracker database.`)
 );
 
-
+startApp();
 // Function to start the application
 async function startApp() {
   const answer = await inquirer.prompt({
@@ -135,121 +134,102 @@ async function addRole() {
   console.log('Role added successfully!');
   startApp();
 };
+
 // Function to add an employee
-function addEmployee() {
-  // Retrieve the list of roles from the database
-  connection.query('SELECT * FROM roles', (err, roles) => {
-    if (err) throw err;
+// Function to add an employee
+async function addEmployee() {
+  const roles = await db.query('SELECT * FROM roles');
+  const employees = await db.query('SELECT * FROM employees');
 
-    inquirer
-      .prompt([
-        {
-          name: 'first_name',
-          type: 'input',
-          message: "Enter the employee's first name:",
-        },
-        {
-          name: 'last_name',
-          type: 'input',
-          message: "Enter the employee's last name:",
-        },
-        {
-          name: 'role',
-          type: 'list',
-          message: "Select the employee's role:",
-          choices: roles.map((role) => role.title),
-        },
-        {
-          name: 'manager',
-          type: 'list',
-          message: "Select the employee's manager:",
-          choices: employees.map(
-            (employee) =>
-              `${employee.first_name} ${employee.last_name}`
-          ),
-        },
-      ])
-      .then((answers) => {
-        const role = roles.find((role) => role.title === answers.role);
-        const manager = employees.find(
-          (employee) =>
-            `${employee.first_name} ${employee.last_name}` === answers.manager
-        );
+  const answers = await inquirer.prompt([
+    {
+      name: 'first_name',
+      type: 'input',
+      message: "Enter the employee's first name:",
+    },
+    {
+      name: 'last_name',
+      type: 'input',
+      message: "Enter the employee's last name:",
+    },
+    {
+      name: 'role',
+      type: 'list',
+      message: "Select the employee's role:",
+      choices: roles.map((role) => role.title),
+    },
+    {
+      name: 'manager',
+      type: 'list',
+      message: "Select the employee's manager:",
+      choices: employees.map(
+        (employee) => `${employee.first_name} ${employee.last_name}`
+      ),
+    },
+  ]);
 
-        connection.query(
-          'INSERT INTO employees SET ?',
-          {
-            first_name: answers.first_name,
-            last_name: answers.last_name,
-            role_id: role.id,
-            manager_id: manager.id,
-          },
-          (err) => {
-            if (err) throw err;
-            console.log('Employee added successfully!');
-            startApp();
-          }
-        );
-      });
+  const role = roles.find((role) => role.title === answers.role);
+  const manager = employees.find(
+    (employee) =>
+      `${employee.first_name} ${employee.last_name}` === answers.manager
+  );
+
+  await db.query('INSERT INTO employees SET ?', {
+    first_name: answers.first_name,
+    last_name: answers.last_name,
+    role_id: role.id,
+    manager_id: manager.id,
   });
+
+  console.log('Employee added successfully!');
+  startApp();
 }
 
 // Function to update an employee role
-function updateEmployeeRole() {
-  // Retrieve the list of employees from the database
-  connection.query('SELECT * FROM employees', (err, employees) => {
-    if (err) throw err;
+async function updateEmployeeRole() {
+  const employees = await db.query('SELECT * FROM employees');
+  const roles = await db.query('SELECT * FROM roles');
 
-    // Retrieve the list of roles from the database
-    connection.query('SELECT * FROM roles', (err, roles) => {
-      if (err) throw err;
+  const answers = await inquirer.prompt([
+    {
+      name: 'employee',
+      type: 'list',
+      message: 'Select the employee to update:',
+      choices: employees.map(
+        (employee) => `${employee.first_name} ${employee.last_name}`
+      ),
+    },
+    {
+      name: 'role',
+      type: 'list',
+      message: 'Select the new role for the employee:',
+      choices: roles.map((role) => role.title),
+    },
+  ]);
 
-      inquirer
-        .prompt([
-          {
-            name: 'employee',
-            type: 'list',
-            message: 'Select the employee to update:',
-            choices: employees.map(
-              (employee) =>
-                `${employee.first_name} ${employee.last_name}`
-            ),
-          },
-          {
-            name: 'role',
-            type: 'list',
-            message: 'Select the new role for the employee:',
-            choices: roles.map((role) => role.title),
-          },
-        ])
-        .then((answers) => {
-          const employee = employees.find(
-            (employee) =>
-              `${employee.first_name} ${employee.last_name}` ===
-              answers.employee
-          );
-          const role = roles.find((role) => role.title === answers.role);
+  const employee = employees.find(
+    (employee) =>
+      `${employee.first_name} ${employee.last_name}` === answers.employee
+  );
+  const role = roles.find((role) => role.title === answers.role);
 
-          connection.query(
-            'UPDATE employees SET ? WHERE ?',
-            [
-              {
-                role_id: role.id,
-              },
-              {
-                id: employee.id,
-              },
-            ],
-            (err) => {
-              if (err) throw err;
-              console.log('Employee role updated successfully!');
-              startApp();
-            }
-          );
-        });
-    });
-  });
-}
+  await db.query(
+    'UPDATE employees SET ? WHERE ?',
+    [
+      {
+        role_id: role.id,
+      },
+      {
+        id: employee.id,
+      },
+    ]
+  );
+
+  console.log('Employee role updated successfully!');
+  startApp();
+};
+
+
 // handling errors
 process.on('unhandledRejection', (err) => {
   console.error('Unhandled Rejection:', err);
