@@ -1,27 +1,30 @@
 const express = require('express');
 const inquirer = require('inquirer');
-const mysql = require('mysql2');
+const mysql = require('mysql2/promise');
+
 
 const PORT = process.env.PORT || 3001;
 const app = express();
 
+const db = "employee_tracker";
 // Express middleware
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
-// Connect to database
-const db = mysql.createConnection(
-  {
-    host: 'localhost',
-    user: 'root',
-    password: 'UNBbootcamp!23',
-    database: 'employee_tracker'
-  },
-  console.log(`Connected to the employee_tracker database.`)
-);
+
+// Connect to the database
+async function startApp(){
+  return await  mysql.createConnection(
+    {
+      host: 'localhost',
+      user: 'root',
+      password: 'UNBbootcamp!23',
+      database: 'employee_tracker'
+    },
+  )
+}
 
 startApp();
-// Function to start the application
 async function startApp() {
   const answer = await inquirer.prompt({
     name: 'action',
@@ -57,7 +60,7 @@ async function startApp() {
       break;
     // Add other cases...
     case 'Exit':
-      db.end();
+      await  db.end();
       break;
   }
 }
@@ -135,7 +138,6 @@ async function addRole() {
   startApp();
 };
 
-// Function to add an employee
 // Function to add an employee
 async function addEmployee() {
   const roles = await db.query('SELECT * FROM roles');
