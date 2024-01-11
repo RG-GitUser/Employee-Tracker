@@ -1,15 +1,21 @@
+const express = require('express');
 const inquirer = require('inquirer');
 const mysql = require('mysql2/promise');
 
-// Create a connection pool to the MySQL database
-const pool = mysql.createPool({
+const PORT = process.env.PORT || 3001;
+const app = express();
+
+// Connect to the database
+const db = mysql.createConnection({
   host: 'localhost',
   user: 'root',
   password: 'UNBbootcamp!23',
-  database: 'employee_tracker',
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0
+  database: 'employee_tracker'
+});
+
+db.connect((err) => {
+  if (err) throw err;
+  console.log('Connected to the employee_tracker database.');
 });
 
 // Function to start the application
@@ -53,21 +59,21 @@ async function startApp() {
       await updateEmployeeRole();
       break;
     case 'Exit':
-      pool.end();
+      db.end();
       break;
   }
 }
 
 // Function to view all departments
 async function viewDepartments() {
-  const [rows] = await pool.query('SELECT * FROM departments');
+  const [rows] = await db.query('SELECT * FROM departments');
   console.table(rows);
   startApp();
 }
 
 // Function to view all roles
 async function viewRoles() {
-  const [rows] = await pool.query(
+  const [rows] = await db.query(
     'SELECT roles.id, roles.title, roles.salary, departments.name AS department FROM roles LEFT JOIN departments ON roles.department_id = departments.id'
   );
   console.table(rows);
@@ -76,7 +82,7 @@ async function viewRoles() {
 
 // Function to view all employees
 async function viewEmployees() {
-  const [rows] = await pool.query(
+  const [rows] = await db.query(
     'SELECT employees.id, employees.first_name, employees.last_name, roles.title, departments.name AS department, roles.salary, CONCAT(managers.first_name, " ", managers.last_name) AS manager FROM employees LEFT JOIN roles ON employees.role_id = roles.id LEFT JOIN departments ON roles.department_id = departments.id LEFT JOIN employees AS managers ON employees.manager_id = managers.id'
   );
   console.table(rows);
@@ -91,14 +97,14 @@ async function addDepartment() {
     message: 'Enter the name of the department:',
   });
 
-  await pool.query('INSERT INTO departments SET ?', { name: answer.name });
+  await db.query('INSERT INTO departments SET ?', { name: answer.name });
   console.log('Department added successfully!');
   startApp();
 }
 
 // Function to add a role
 async function addRole() {
-  const [departments] = await pool.query('SELECT * FROM departments');
+  const [departments] = await db.query('SELECT * FROM departments');
 
   const answers = await inquirer.prompt([
     {
@@ -121,7 +127,7 @@ async function addRole() {
 
   const department = departments.find((d) => d.name === answers.department);
 
-  await pool.query('INSERT INTO roles SET ?', {
+  await db.query('INSERT INTO roles SET ?', {
     title: answers.title,
     salary: answers.salary,
     department_id: department.id,
@@ -248,8 +254,10 @@ function updateEmployeeRole() {
 }
 
 // Connect to the MySQL database and start the application
-pool.getConnection((err, connection) => {
-  if (err) throw err;
-  console.log('Connected to the employee database!');
-  startApp();
+app.use((req, res) => {
+  res.status(404).end();
+});
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
