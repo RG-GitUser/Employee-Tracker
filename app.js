@@ -1,22 +1,26 @@
 const express = require('express');
-const inquirer = require('inquirer');
-const mysql = require('mysql2/promise');
+// Import and require mysql2
+const mysql = require('mysql2');
 
 const PORT = process.env.PORT || 3001;
 const app = express();
 
-// Connect to the database
-const db = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: 'UNBbootcamp!23',
-  database: 'employee_tracker'
-});
+// Express middleware
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
 
-db.connect((err) => {
-  if (err) throw err;
-  console.log('Connected to the employee_tracker database.');
-});
+// Connect to database
+const db = mysql.createConnection(
+  {
+    host: 'localhost',
+    // MySQL username,
+    user: 'root',
+    password: 'UNBbootcamp!23',
+    database: 'employee_tracker'
+  },
+  console.log(`Connected to the employee_tracker database.`)
+);
+
 
 // Function to start the application
 async function startApp() {
@@ -52,12 +56,7 @@ async function startApp() {
     case 'Add a role':
       await addRole();
       break;
-    case 'Add an employee':
-      await addEmployee();
-      break;
-    case 'Update an employee role':
-      await updateEmployeeRole();
-      break;
+    // Add other cases...
     case 'Exit':
       db.end();
       break;
@@ -135,8 +134,7 @@ async function addRole() {
 
   console.log('Role added successfully!');
   startApp();
-}
-
+};
 // Function to add an employee
 function addEmployee() {
   // Retrieve the list of roles from the database
@@ -252,6 +250,11 @@ function updateEmployeeRole() {
     });
   });
 }
+// handling errors
+process.on('unhandledRejection', (err) => {
+  console.error('Unhandled Rejection:', err);
+  db.end();
+});
 
 // Connect to the MySQL database and start the application
 app.use((req, res) => {
