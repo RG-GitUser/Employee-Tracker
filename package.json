@@ -9,5 +9,19 @@
   },
   "scripts": {
     "start": "node app.js"
-  }
+  },
+  "name": "employee-tracker",
+  "description": "## Description In this project, I have created a CLI application to display data for tracking company employees.",
+  "version": "1.0.0",
+  "main": "app.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RG-GitUser/Employee-Tracker.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/RG-GitUser/Employee-Tracker/issues"
+  },
+  "homepage": "https://github.com/RG-GitUser/Employee-Tracker#readme"
 }
