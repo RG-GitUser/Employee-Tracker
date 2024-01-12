@@ -160,8 +160,10 @@ async function addRole() {
 
 // Function to update an employee role
 async function updateEmployeeRole() {
-  const employees = await db.execute('SELECT * FROM employees');
-  const roles = await db.execute('SELECT * FROM roles');
+  console.log('trigger')
+   const db = await getDbConnection();
+  const [employees] = await db.execute('SELECT * FROM employees');
+  const [roles] = await db.execute('SELECT * FROM roles');
 
   const answers = await inquirer.prompt([
     {
@@ -180,6 +182,7 @@ async function updateEmployeeRole() {
     },
   ]);
 
+
   const employee = employees.find(
     (employee) =>
       `${employee.first_name} ${employee.last_name}` === answers.employee
@@ -187,15 +190,8 @@ async function updateEmployeeRole() {
   const role = roles.find((role) => role.title === answers.role);
 
   await db.execute(
-    'UPDATE employees SET ? WHERE ?',
-    [
-      {
-        role_id: role.id,
-      },
-      {
-        id: employee.id,
-      },
-    ]
+    'UPDATE employees SET role_id = ? WHERE id = ?',
+    [role.id, employee.id]
   );
 
   console.log('Employee role updated successfully!');
