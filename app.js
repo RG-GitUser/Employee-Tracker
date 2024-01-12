@@ -45,7 +45,7 @@ async function startApp() {
       'Update an employee role',
       'Exit',
     ],
-  });
+  })
 
   switch (answer.action) {
     case 'View all departments':
@@ -157,6 +157,8 @@ async function addRole() {
   db.release();
   startApp();
 };
+
+
 
 // Function to update an employee role
 async function updateEmployeeRole() {
